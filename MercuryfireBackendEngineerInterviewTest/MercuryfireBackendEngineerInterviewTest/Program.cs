@@ -1,4 +1,3 @@
-
 using MercuryfireBackendEngineerInterviewTest.Interfaces;
 using MercuryfireBackendEngineerInterviewTest.Services;
 using Microsoft.OpenApi.Models;

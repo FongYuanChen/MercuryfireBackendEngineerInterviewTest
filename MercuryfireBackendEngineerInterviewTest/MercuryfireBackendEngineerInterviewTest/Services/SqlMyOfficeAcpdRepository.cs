@@ -1,6 +1,9 @@
 ﻿using MercuryfireBackendEngineerInterviewTest.Interfaces;
+using MercuryfireBackendEngineerInterviewTest.Models.Requests;
+using MercuryfireBackendEngineerInterviewTest.Models.Responses;
 using Microsoft.Data.SqlClient;
 using System.Data;
+using System.Text.Json;
 
 namespace MercuryfireBackendEngineerInterviewTest.Services
 {
@@ -13,34 +16,64 @@ namespace MercuryfireBackendEngineerInterviewTest.Services
             _connectionString = config.GetConnectionString("BackendExamHub");
         }
 
-        public async Task<string> CreateAsync(string json)
+        public async Task<List<MyOfficeAcpdQueryResponse>> GetAsync(MyOfficeAcpdQueryRequest request)
         {
-            using var connection = new SqlConnection(_connectionString);
-            using var command = new SqlCommand("dbo.sp_MyOffice_ACPD_Create_JSON", connection);
-
+            var requestJson = JsonSerializer.Serialize(request);
+            using SqlConnection connection = new SqlConnection(_connectionString);
+            using SqlCommand command = new SqlCommand("dbo.sp_MyOffice_ACPD_Query_JSON", connection);
             command.CommandType = CommandType.StoredProcedure;
-
             command.Parameters.Add(new SqlParameter("@ActionJSON", SqlDbType.NVarChar)
             {
-                Value = json
+                Value = requestJson
             });
-
             await connection.OpenAsync();
-
-            return (await command.ExecuteScalarAsync())?.ToString();
+            var responseJson = (await command.ExecuteScalarAsync())?.ToString() ?? string.Empty;
+            return JsonSerializer.Deserialize<List<MyOfficeAcpdQueryResponse>>(responseJson);
         }
 
-        public async Task<string> DeleteAsync(char acpdSid)
+        public async Task<MyOfficeAcpdCreateResponse> CreateAsync(MyOfficeAcpdCreateRequest request)
         {
-            using SqlConnection connection = new SqlConnection(_connectionString);
-            using SqlCommand command = new SqlCommand("dbo.sp_MyOffice_ACPD_SoftDelete", connection);
+            var requestJson = JsonSerializer.Serialize(request);
+            using var connection = new SqlConnection(_connectionString);
+            using var command = new SqlCommand("dbo.sp_MyOffice_ACPD_Create_JSON", connection);
             command.CommandType = CommandType.StoredProcedure;
-
-            command.Parameters.Add("@ACPD_SID", SqlDbType.Char, 20).Value = acpdSid;
-
+            command.Parameters.Add(new SqlParameter("@ActionJSON", SqlDbType.NVarChar)
+            {
+                Value = requestJson
+            });
             await connection.OpenAsync();
+            var responseJson = (await command.ExecuteScalarAsync())?.ToString() ?? string.Empty;
+            return JsonSerializer.Deserialize<MyOfficeAcpdCreateResponse>(responseJson);
+        }
 
-            return (await command.ExecuteScalarAsync())?.ToString();
+        public async Task<MyOfficeAcpdUpdateResponse> UpdateAsync(MyOfficeAcpdUpdateRequest request)
+        {
+            var requestJson = JsonSerializer.Serialize(request);
+            using SqlConnection connection = new SqlConnection(_connectionString);
+            using SqlCommand command = new SqlCommand("dbo.sp_MyOffice_ACPD_Update_JSON", connection);
+            command.CommandType = CommandType.StoredProcedure;
+            command.Parameters.Add(new SqlParameter("@ActionJSON", SqlDbType.NVarChar)
+            {
+                Value = requestJson
+            });
+            await connection.OpenAsync();
+            var responseJson = (await command.ExecuteScalarAsync())?.ToString() ?? string.Empty;
+            return JsonSerializer.Deserialize<MyOfficeAcpdUpdateResponse>(responseJson);
+        }
+
+        public async Task<MyOfficeAcpdDeleteResponse> DeleteAsync(MyOfficeAcpdDeleteRequest request)
+        {
+            var requestJson = JsonSerializer.Serialize(request);
+            using SqlConnection connection = new SqlConnection(_connectionString);
+            using SqlCommand command = new SqlCommand("dbo.sp_MyOffice_ACPD_Delete_JSON", connection);
+            command.CommandType = CommandType.StoredProcedure;
+            command.Parameters.Add(new SqlParameter("@ActionJSON", SqlDbType.NVarChar)
+            {
+                Value = requestJson
+            });
+            await connection.OpenAsync();
+            var responseJson = (await command.ExecuteScalarAsync())?.ToString() ?? string.Empty;
+            return JsonSerializer.Deserialize<MyOfficeAcpdDeleteResponse>(responseJson);
         }
     }
 }
