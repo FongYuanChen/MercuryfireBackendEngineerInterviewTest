@@ -16,10 +16,12 @@
 2. 開啟 SQL Server Management Studio (SSMS)
 3. 還原資料庫：
    - 右鍵「資料庫」→「還原資料庫」
-   - 選擇專案中的 `BackendExamHub.bak`
+   - 選擇專案中的備份檔：
+     - `BackendExamHub_2022.bak`（2022 版本）
+     - `BackendExamHub_2025.bak`（2025 版本）
    - 還原到 SQL Server
 4. 開啟 Visual Studio，載入專案  
-5. 設定 appsettings.json 的資料庫連線字串，指向剛還原的資料庫  
+5. 設定 `appsettings.json` 的資料庫連線字串，指向剛還原的資料庫  
 6. 執行專案，即可測試 API 與 SP 功能
 
 
